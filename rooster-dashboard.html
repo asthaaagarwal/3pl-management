@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3PL Management - Rooster</title>
+    <link rel="stylesheet" href="rooster-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span class="logo-text">Rooster</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="prototype-badge">
+                <i class="fas fa-flask"></i>
+                PROTOTYPE - Not Final Product
+            </div>
+        </div>
+        <nav class="header-nav">
+            <a href="#" class="nav-item">Scheduler</a>
+            <a href="#" class="nav-item">Live</a>
+            <a href="#" class="nav-item">Review</a>
+            <a href="#" class="nav-item">Absences</a>
+            <a href="#" class="nav-item">Payments</a>
+            <a href="#" class="nav-item">Workers</a>
+            <a href="#" class="nav-item">City settings</a>
+            <a href="#" class="nav-item active">3PL management</a>
+        </nav>
+        <div class="header-right">
+            <span class="city-selector">
+                Madrid
+                <i class="fas fa-chevron-down"></i>
+            </span>
+            <button class="export-btn">
+                <i class="fas fa-external-link-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link active" data-section="business-list">
+                        Business management
+                    </a>
+                </li>
+                <li class="sidebar-item has-submenu">
+                    <a href="#" class="sidebar-link" data-section="company-list">
+                        Company management
+                        <i class="fas fa-chevron-up submenu-arrow"></i>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li class="sidebar-subitem">
+                            <a href="#" class="sidebar-sublink" data-section="performance">
+                                Performance
+                            </a>
+                        </li>
+                        <li class="sidebar-subitem">
+                            <a href="#" class="sidebar-sublink" data-section="payments">
+                                Payments
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" data-section="delivery-areas">
+                        Delivery area management
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" data-section="bulk-status">
+                        Bulk status change
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Company Management Section -->
+            <section id="company-list" class="content-section">
+                <div class="content-header">
+                    <div class="page-info">
+                        <h1 class="page-title">Company management</h1>
+                        <p class="page-description">Register and view the company information</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="primary-btn" onclick="showSection('company-create')">
+                            <i class="fas fa-plus"></i>
+                            Register company
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div class="table-controls">
+                        <div class="filters-container">
+                            <div class="search-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" placeholder="Search for Business" id="company-search">
+                            </div>
+                            <div class="filter-container">
+                                <select class="filter-select" id="status-filter" onchange="handleStatusFilter(this.value)">
+                                    <option value="">All Status</option>
+                                    <option value="preparing">Preparing</option>
+                                    <option value="operating">Operating</option>
+                                    <option value="suspended">Suspended</option>
+                                    <option value="terminated">Terminated</option>
+                                    <option value="termination-requested">Termination Requested</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bulk-actions">
+                            <button class="secondary-btn" onclick="openModal('bulk-status-modal')">
+                                <i class="fas fa-edit"></i>
+                                Bulk Status Change
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="select-all" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th>
+                                        ID
+                                        <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>
+                                        Name
+                                        <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>
+                                        Business
+                                        <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>
+                                        Delivery area
+                                        <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th class="poc-email-column">
+                                        POC email
+                                        <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>
+                                        Status
+                                        <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="companies-table-body">
+                                <!-- Companies will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer">
+                        <div class="items-per-page">
+                            <span>Items per page</span>
+                            <select class="page-size-select" onchange="changePageSize(this.value)">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                        <div class="pagination">
+                            <button class="pagination-btn" onclick="changePage(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="pagination-info">
+                                <span id="current-page">1</span>
+                                <span id="total-pages">15</span>
+                            </span>
+                            <button class="pagination-btn" onclick="changePage(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Company Registration Section -->
+            <section id="company-create" class="content-section">
+                <div class="back-navigation">
+                    <button class="back-nav-btn" onclick="showSection('company-list')">
+                        <i class="fas fa-chevron-left"></i>
+                        Back to Company management
+                    </button>
+                </div>
+                <div class="content-header">
+                    <div class="page-info">
+                        <h1 class="page-title">Register New Company</h1>
+                        <p class="page-description">Create a new company with complete information</p>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div class="form-container">
+                        <form id="create-company-form" class="form">
+                            <div class="form-section">
+                                <h3>Company Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="company-name">Company Name *</label>
+                                        <input type="text" id="company-name" required placeholder="Enter company name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="company-phone">Phone Number *</label>
+                                        <input type="tel" id="company-phone" required placeholder="Enter company phone number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="company-address">Company Address *</label>
+                                        <textarea id="company-address" rows="2" required placeholder="Enter complete company address"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Service commencement number">Company Insurance *</label>
+                                        <input type="text" id="company-insurance" required placeholder="Enter service commencement number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="company-delivery-zone">Delivery Zone *</label>
+                                        <div class="zone-search">
+                                            <input type="text" id="company-delivery-zone" required placeholder="Search delivery zones..." onkeyup="searchDeliveryZones(this.value)">
+                                            <div class="zone-suggestions" id="zone-suggestions" style="display: none;">
+                                                <!-- Zone suggestions will appear here -->
+                                            </div>
+                                        </div>
+                                        <small>Search field for exact match delivery zones</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                    
+
+                            <div class="form-section">
+                                <h3>Business Mapping</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="company-business">Business ID *</label>
+                                        <div class="business-search">
+                                            <select id="company-business" required onchange="updateBusinessInfo(this.value)">
+                                                <option value="">Select Business</option>
+                                                <!-- Will be populated dynamically -->
+                                            </select>
+                                            <div class="business-info" id="selected-business-info" style="display: none;">
+                                                <small>Selected business details will appear here</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <!-- Conditional Business Information Section for Intermediary WW -->
+                                <div id="intermediary-business-info" style="display: none; margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid #86b3fe;">
+                                    <h4 style="margin: 0 0 16px 0; color: #86b3fe;">Add Business Info</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="intermediary-business-name-mapping">Business Name *</label>
+                                            <input type="text" id="intermediary-business-name-mapping" placeholder="Enter business name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="intermediary-registration-mapping">Registration Number *</label>
+                                            <input type="text" id="intermediary-registration-mapping" placeholder="Enter registration number">
+                                        </div>
+                                    </div>
+                                    <div class="form-row" style="margin-top: 20px;">
+                                        <div class="form-group">
+                                            <label for="intermediary-owner-mapping">Owner Name *</label>
+                                            <input type="text" id="intermediary-owner-mapping" placeholder="Enter owner name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="intermediary-opening-date-mapping">Opening Date *</label>
+                                            <input type="date" id="intermediary-opening-date-mapping">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>CEO & Partner Center Integration</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="company-ceo-email">CEO Email *</label>
+                                        <div class="ceo-email-input">
+                                            <input type="email" id="company-ceo-email" required placeholder="Enter CEO's email address" onblur="verifyCEOEmail(this.value)">
+                                            <button type="button" class="verify-btn" id="verify-ceo-btn" onclick="verifyCEOEmail(document.getElementById('company-ceo-email').value)">
+                                                <i class="fas fa-check"></i> Verify with Partner Center
+                                            </button>
+                                        </div>
+                                        <div class="verification-status pending" id="ceo-verification">
+                                            <i class="fas fa-info-circle"></i> CEO must have existing Partner Center account
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mapping-note">
+                                    <p><strong>Important:</strong> The CEO email cannot be changed after company creation. Everything else can be modified later.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="secondary-btn" onclick="showSection('company-list')">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="primary-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Create Company
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Management Section -->
+            <section id="business-list" class="content-section active">
+                <div class="content-header">
+                    <div class="page-info">
+                        <h1 class="page-title">Business management</h1>
+                        <p class="page-description">Register and manage business entities</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="primary-btn" onclick="showSection('business-create')">
+                            <i class="fas fa-plus"></i>
+                            Register business
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div class="table-controls">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search businesses" id="business-search">
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Business ID</th>
+                                    <th>Business Name</th>
+                                    <th>BRN</th>
+                                    <th>Type</th>
+                                    <th>Companies Count</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="businesses-table-body">
+                                <!-- Businesses will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Registration Section -->
+            <section id="business-create" class="content-section">
+                <div class="back-navigation">
+                    <button class="back-nav-btn" onclick="showSection('business-list')">
+                        <i class="fas fa-chevron-left"></i>
+                        Back to Business management
+                    </button>
+                </div>
+                <div class="content-header">
+                    <div class="page-info">
+                        <h1 class="page-title">Register New Business</h1>
+                        <p class="page-description">Create a new business entity with complete information</p>
+                    </div>
+
+                </div>
+
+                <div class="content-body">
+                    <div class="form-container">
+                        <form id="create-business-form" class="form">
+                            <div class="form-section">
+                                <h3>Basic Business Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="business-name">Business Name *</label>
+                                        <input type="text" id="business-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="business-opening-date">Opening Date *</label>
+                                        <input type="date" id="business-opening-date" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="business-location">Business Location *</label>
+                                        <textarea id="business-location" rows="2" required placeholder="Enter complete business address"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="head-office-location">Head Office Location *</label>
+                                        <textarea id="head-office-location" rows="2" required placeholder="Enter head office address"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Registration & Verification</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="business-brn">Business Registration Number (BRN) *</label>
+                                        <div class="verification-input">
+                                            <input type="text" id="business-brn" required onblur="verifyBRN(this.value)">
+                                            <button type="button" class="verify-btn" onclick="verifyBRN(document.getElementById('business-brn').value)">
+                                                <i class="fas fa-check"></i> Verify
+                                            </button>
+                                        </div>
+                                        <div class="verification-status pending" id="brn-verification">
+                                            <i class="fas fa-clock"></i> Press Enter or click Verify to validate with Government website
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tax-document">Tax Document *</label>
+                                        <div class="file-upload">
+                                            <input type="file" id="tax-document" accept=".pdf,.jpg,.png,.doc,.docx" required>
+                                            <div class="file-upload-text">
+                                                <i class="fas fa-upload"></i>
+                                                Click to upload or drag and drop
+                                            </div>
+                                        </div>
+                                        <small>Upload tax registration document (PDF, JPG, PNG, DOC)</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Bank Account Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="bank-name">Bank Name *</label>
+                                        <input type="text" id="bank-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bank-number">Bank Account Number *</label>
+                                        <input type="text" id="bank-number" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="account-holder">Account Holder Name *</label>
+                                        <input type="text" id="account-holder" required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Bank Account Verification Section -->
+                                <div class="verification-section">
+                                    <button type="button" class="verify-btn" id="verify-bank-btn" onclick="verifyBankAccount()">
+                                        <i class="fas fa-check"></i> Verify Bank Account Information
+                                    </button>
+                                    <div class="verification-status pending" id="bank-verification">
+                                        <i class="fas fa-clock"></i> Complete all bank information above, then click Verify to validate with financial institution
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Owner Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="owner-name">Business Owner Name *</label>
+                                        <input type="text" id="owner-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="owner-phone">Owner Phone Number *</label>
+                                        <input type="tel" id="owner-phone" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="owner-birthday">Owner Birthday *</label>
+                                        <input type="date" id="owner-birthday" required>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Type & Insurance</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="business-type">Business Type *</label>
+                                        <input type="text" placeholder="Enter Business type" id="business-type" required>
+                                    
+                                            
+                        
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="insurance-type">Insurance Type</label>
+                                        <select id="insurance-type">
+                                            <option value="">Select Insurance Type</option>
+                                            <option value="single">Single Partner</option>
+                                            <option value="intermediary-self">Intermediary - Self Reporting</option>
+                                            <option value="intermediary-ww">Intermediary - WW Reporting</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-actions">
+                                <button type="button" class="secondary-btn" onclick="showSection('business-list')">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="primary-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Create Business
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Details Section -->
+            <section id="business-details" class="content-section">
+                <div class="back-navigation">
+                    <button class="back-nav-btn" onclick="showSection('business-list')">
+                        <i class="fas fa-chevron-left"></i>
+                        Back to Business management
+                    </button>
+                </div>
+                <div class="content-header">
+                    <div class="page-info">
+                        <h1 class="page-title" id="business-details-title">Business Details</h1>
+                        <p class="page-description">View and edit business information</p>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div class="form-container">
+                        <form id="business-details-form" class="form" onsubmit="handleUpdateBusiness(event)">
+                            <div class="form-section">
+                                <h3>Basic Business Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-business-name">Business Name *</label>
+                                        <input type="text" id="detail-business-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-business-opening-date">Opening Date *</label>
+                                        <input type="date" id="detail-business-opening-date" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="detail-business-location">Business Location</label>
+                                        <textarea id="detail-business-location" rows="2" placeholder="Enter complete business address"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="detail-head-office-location">Head Office Location</label>
+                                        <textarea id="detail-head-office-location" rows="2" placeholder="Enter head office address"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Registration & Verification</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-business-brn">Business Registration Number (BRN) *</label>
+                                        <div class="verification-input">
+                                            <input type="text" id="detail-business-brn" required onchange="handleBRNChange(this.value)">
+                                            <button type="button" class="verify-btn" id="detail-verify-brn-btn" onclick="verifyDetailBRN(document.getElementById('detail-business-brn').value)" style="display: none;">
+                                                <i class="fas fa-check"></i> Re-verify
+                                            </button>
+                                        </div>
+                                        <div class="verification-status verified" id="detail-brn-verification">
+                                            <i class="fas fa-check-circle"></i> BRN Verified
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-tax-document">Tax Document</label>
+                                        <div class="document-display">
+                                            <div class="current-document" id="detail-current-tax-document">
+                                                <i class="fas fa-file-pdf"></i>
+                                                <span id="detail-tax-document-name">business_tax_registration_2024.pdf</span>
+                                                <button type="button" class="view-document-btn" onclick="viewTaxDocument()">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </div>
+                                            <div class="file-upload-replacement">
+                                                <input type="file" id="detail-tax-document" accept=".pdf,.jpg,.png,.doc,.docx" onchange="handleTaxDocumentChange(this)">
+                                                <label for="detail-tax-document" class="upload-new-btn">
+                                                    <i class="fas fa-upload"></i>
+                                                    Upload New Document
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Bank Account Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-bank-name">Bank Name *</label>
+                                        <input type="text" id="detail-bank-name" required onchange="handleBankInfoChange()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-bank-number">Bank Account Number *</label>
+                                        <input type="text" id="detail-bank-number" required onchange="handleBankInfoChange()">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-account-holder">Account Holder Name *</label>
+                                        <input type="text" id="detail-account-holder" required onchange="handleBankInfoChange()">
+                                    </div>
+                                </div>
+                                
+                                <!-- Bank Account Verification Section -->
+                                <div class="verification-section">
+                                    <button type="button" class="verify-btn" id="detail-verify-bank-btn" onclick="verifyDetailBankAccount()">
+                                        <i class="fas fa-check"></i> Re-verify Bank Account Information
+                                    </button>
+                                    <div class="verification-status verified" id="detail-bank-verification">
+                                        <i class="fas fa-check-circle"></i> Bank Account Information Verified
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Owner Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-owner-name">Business Owner Name *</label>
+                                        <input type="text" id="detail-owner-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-owner-phone">Owner Phone Number *</label>
+                                        <input type="tel" id="detail-owner-phone" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-owner-birthday">Owner Birthday *</label>
+                                        <input type="date" id="detail-owner-birthday" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Type & Insurance</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-business-type">Business Type *</label>
+                                        <input type="text" id="detail-business-type" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-insurance-type">Insurance Type *</label>
+                                        <select id="detail-insurance-type" required>
+                                            <option value="">Select Insurance Type</option>
+                                            <option value="single">Single Partner</option>
+                                            <option value="intermediary-self">Intermediary - Self Reporting</option>
+                                            <option value="intermediary-ww">Intermediary - WW Reporting</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>System Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-business-id">Business ID</label>
+                                        <input type="text" id="detail-business-id" class="readonly-field" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-sap-code">SAP Code</label>
+                                        <input type="text" id="detail-sap-code" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-companies-count">Associated Companies</label>
+                                        <input type="text" id="detail-companies-count" class="readonly-field" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-created-date">Created Date</label>
+                                        <input type="text" id="detail-created-date" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="secondary-btn" onclick="showSection('business-list')">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Back
+                                </button>
+                                <button type="submit" class="primary-btn">
+                                    <i class="fas fa-save"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Company Details Section -->
+            <section id="company-details" class="content-section">
+                <div class="back-navigation">
+                    <button class="back-nav-btn" onclick="showSection('company-list')">
+                        <i class="fas fa-chevron-left"></i>
+                        Back to Company management
+                    </button>
+                </div>
+                <div class="content-header">
+                    <div class="page-info">
+                        <h1 class="page-title" id="company-details-title">Company Details</h1>
+                        <p class="page-description">View and edit company information</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="status-dropdown-container">
+                            <label class="status-label">Status:</label>
+                            <select id="detail-company-status-header" class="status-dropdown" onchange="handleCompanyStatusChange(this.value)">
+                                <option value="">Select Status</option>
+                                <option value="preparing">Preparing</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="terminated">Terminated</option>
+                                <option value="under-review">Under Review</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-body">
+                    <div class="form-container">
+                        <form id="company-details-form" class="form" onsubmit="handleUpdateCompany(event)">
+                            <div class="form-section">
+                                <h3>Company Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-name">Company Name *</label>
+                                        <input type="text" id="detail-company-name" required placeholder="Enter company name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-company-phone">Phone Number *</label>
+                                        <input type="tel" id="detail-company-phone" required placeholder="Enter company phone number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-address">Company Address *</label>
+                                        <textarea id="detail-company-address" rows="2" required placeholder="Enter complete company address"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Service commencement number">Company Insurance *</label>
+                                        <input type="text" id="detail-company-insurance" required placeholder="Enter service commencement number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="detail-company-delivery-zone">Delivery Zone *</label>
+                                        <input type="text" id="detail-company-delivery-zone" required placeholder="Search delivery zones...">
+                                        <small>Search field for exact match delivery zones</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Mapping</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-business">Business ID</label>
+                                        <input type="text" id="detail-company-business" class="readonly-field" readonly>
+                                        <small>Business association cannot be changed</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-company-business-name">Business Name</label>
+                                        <input type="text" id="detail-company-business-name" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Conditional Business Information Section for Intermediary WW -->
+                                <div id="detail-intermediary-business-info" style="display: none; margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid #86b3fe;">
+                                    <h4 style="margin: 0 0 16px 0; color: #86b3fe;">Business Info</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="detail-intermediary-business-name">Business Name</label>
+                                            <input type="text" id="detail-intermediary-business-name" class="readonly-field" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="detail-intermediary-registration">Registration Number</label>
+                                            <input type="text" id="detail-intermediary-registration" class="readonly-field" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-row" style="margin-top: 20px;">
+                                        <div class="form-group">
+                                            <label for="detail-intermediary-owner">Owner Name</label>
+                                            <input type="text" id="detail-intermediary-owner" class="readonly-field" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="detail-intermediary-opening-date">Opening Date</label>
+                                            <input type="date" id="detail-intermediary-opening-date" class="readonly-field" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>CEO & Partner Center Integration</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-ceo-email">CEO Email</label>
+                                        <input type="email" id="detail-company-ceo-email" class="readonly-field" readonly>
+                                        <div class="verification-status verified" id="detail-ceo-verification">
+                                            <i class="fas fa-check-circle"></i> CEO email verified in Partner Center
+                                        </div>
+                                        <small>CEO email cannot be changed after company creation</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>System Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-id">Company ID</label>
+                                        <input type="text" id="detail-company-id" class="readonly-field" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-company-status">Status</label>
+                                        <input type="text" id="detail-company-status" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-contract">Contract ID</label>
+                                        <input type="text" id="detail-company-contract" class="readonly-field" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-company-poc-email">POC Email</label>
+                                        <input type="email" id="detail-company-poc-email" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-created-date">Created Date</label>
+                                        <input type="text" id="detail-company-created-date" class="readonly-field" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="secondary-btn" onclick="showSection('company-list')">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Back
+                                </button>
+                                <button type="submit" class="primary-btn">
+                                    <i class="fas fa-save"></i>
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other sections will be added here -->
+        </main>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Bulk Status Change Modal -->
+    <div id="bulk-status-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Bulk Status Change</h2>
+                <button class="close-btn" onclick="closeModal('bulk-status-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="selected-companies" id="selected-companies">
+                    <!-- Selected companies will be shown here -->
+                </div>
+                <div class="form-group">
+                    <label for="bulk-status">New Status *</label>
+                    <select id="bulk-status" required>
+                        <option value="">Select a status...</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="terminated">Terminated</option>
+                        <option value="under-review">Under Review</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="secondary-btn" onclick="closeModal('bulk-status-modal')">
+                    Cancel
+                </button>
+                <button type="button" class="primary-btn" onclick="applyBulkStatus()">
+                    <i class="fas fa-save"></i>
+                    Apply Status Change
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="rooster-script.js"></script>
+</body>
+</html>
