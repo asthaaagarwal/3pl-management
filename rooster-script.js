@@ -73,46 +73,56 @@ const sampleCompanies = [
     {
         id: 756,
         name: 'qayemha_logistics_ftr',
+        phone: '+966-11-456-7890',
+        address: '123 Industrial Road, Riyadh, Saudi Arabia',
         businessId: 'BUS001',
         businessName: 'Qayemha Logistics',
         deliveryArea: 'Goya centro',
-        pocEmail: '3pl.qayemha.logistics.ftr.2.ext@hungerstation.com',
         status: 'preparing',
-        ceoEmail: 'ceo@qayemha.com',
+        adminName: 'Ahmed Al-Rashid',
+        adminPhone: '+966-50-123-4567',
+        adminId: 'ADM001',
         createdAt: '2024-01-15',
         contractId: 'CON001'
     },
     {
         id: 654,
         name: 'masarat_alsahra_ftr',
+        phone: '+966-11-567-8901',
+        address: '456 Commerce Street, Jeddah, Saudi Arabia',
         businessId: 'BUS002',
         businessName: 'Masarat Al Sahra',
         deliveryArea: 'Goya',
-        pocEmail: '3pl.masarat.alsahra.ftr.2.ext@hungerstation.com',
         status: 'operating',
-        ceoEmail: 'ceo@masarat.com',
+        adminName: 'Sarah Ahmed',
+        adminPhone: '+966-55-987-6543',
+        adminId: 'ADM002',
         createdAt: '2024-02-01',
         contractId: 'CON002'
     },
     {
         id: 901,
         name: 'tomorrows_wealth_co_ftr',
+        phone: '+966-11-678-9012',
+        address: '789 Business District, Dammam, Saudi Arabia',
         businessId: 'BUS003',
         businessName: 'Tomorrow\'s Wealth Co',
         deliveryArea: 'Azul',
-        pocEmail: 'tomorrow\'s.wealth.co.ftr.ext@hungerstation.com',
         status: 'operating',
-        ceoEmail: 'ceo@tomorrows.com',
+        adminName: 'Kim Jong-Un',
+        adminPhone: '+82-10-1234-5678',
+        adminId: 'ADM003',
         createdAt: '2024-01-20',
         contractId: 'CON003'
     },
     {
         id: 432,
         name: 'nakhat_altareiq_ftr',
+        phone: '+966-11-789-0123',
+        address: '321 Transport Avenue, Mecca, Saudi Arabia',
         businessId: 'BUS004',
         businessName: 'Nakhat Al Tareiq',
         deliveryArea: 'Buenos aires norte',
-        pocEmail: '3pl.nakhat.altareiq.ftr.2.ext@hungerstation.com',
         status: 'suspended',
         ceoEmail: 'ceo@nakhat.com',
         createdAt: '2024-01-10',
@@ -121,10 +131,11 @@ const sampleCompanies = [
     {
         id: 731,
         name: 'wared_alkhalej_ftr',
+        phone: '+966-11-890-1234',
+        address: '654 Logistics Zone, Medina, Saudi Arabia',
         businessId: 'BUS005',
         businessName: 'Wared Al Khalej',
         deliveryArea: 'Catamarca',
-        pocEmail: '3pl.wared.alkhalej.ftr.2.ext@hungerstation.com',
         status: 'terminated',
         ceoEmail: 'ceo@wared.com',
         createdAt: '2023-12-15',
@@ -136,7 +147,6 @@ const sampleCompanies = [
         businessId: 'BUS006',
         businessName: 'Harkan Transport',
         deliveryArea: 'Comodoro rivadavia',
-        pocEmail: '3pl.harkan.ftr.3.ext@hungerstation.com',
         status: 'suspended',
         ceoEmail: 'ceo@harkan.com',
         createdAt: '2024-01-05',
@@ -148,7 +158,6 @@ const sampleCompanies = [
         businessId: 'BUS007',
         businessName: 'Weesam Al Khaleej',
         deliveryArea: 'Corrientes resistencia',
-        pocEmail: '3pl.weesam.alkhaleej.ftr.2.ext@hungerstation.com',
         status: 'terminated',
         ceoEmail: 'ceo@weesam.com',
         createdAt: '2023-11-20',
@@ -160,7 +169,6 @@ const sampleCompanies = [
         businessId: 'BUS008',
         businessName: 'Renad Logistics',
         deliveryArea: 'Esperanza',
-        pocEmail: '3pl.renad.logistics.ftr.2.ext@hungerstation.com',
         status: 'termination-requested',
         ceoEmail: 'ceo@renad.com',
         createdAt: '2023-12-01',
@@ -172,7 +180,6 @@ const sampleCompanies = [
         businessId: 'BUS009',
         businessName: 'Akbar Al Mtahedon',
         deliveryArea: 'Gba oeste',
-        pocEmail: '3pl.weesam.alkhaleej.ftr.2.ext@hungerstation.com',
         status: 'preparing',
         ceoEmail: 'ceo@akbar.com',
         createdAt: '2024-02-10',
@@ -460,9 +467,6 @@ function renderCompaniesTable() {
             <td>${company.name}</td>
             <td>${company.businessName}</td>
             <td>${company.deliveryArea}</td>
-            <td class="poc-email-column">
-                <span title="${company.pocEmail}">${company.pocEmail}</span>
-            </td>
             <td>
                 <span class="status-badge status-${company.status}">
                     ${formatStatus(company.status)}
@@ -509,27 +513,46 @@ function renderBusinessesTable() {
 function populateBusinessOptions() {
     const select = document.getElementById('company-business');
     if (!select) return;
-    
+
+    // Count existing companies per business
+    const businessCompanyCount = {};
+    companies.forEach(company => {
+        if (company.businessId) {
+            businessCompanyCount[company.businessId] = (businessCompanyCount[company.businessId] || 0) + 1;
+        }
+    });
+
     select.innerHTML = '<option value="">Select Business</option>' +
-        businesses.map(business => 
-            `<option value="${business.id}">${business.name} (${business.id})</option>`
-        ).join('');
+        businesses.map(business => {
+            const companyCount = businessCompanyCount[business.id] || 0;
+            const isSinglePartner = business.insuranceType === 'single';
+            const isDisabled = isSinglePartner && companyCount >= 1;
+            const disabledAttr = isDisabled ? 'disabled' : '';
+            const disabledText = isDisabled ? ' (Max 1 company reached)' : '';
+
+            return `<option value="${business.id}" ${disabledAttr}>${business.name} (${business.id})${disabledText}</option>`;
+        }).join('');
 }
 
 function updateBusinessInfo(businessId) {
     const selectedBusiness = businesses.find(b => b.id === businessId);
     const businessInfoDiv = document.getElementById('selected-business-info');
     const intermediarySection = document.getElementById('intermediary-business-info');
-    
+    const companyOwnerNameGroup = document.getElementById('company-owner-name-group');
+
     if (!selectedBusiness) {
         businessInfoDiv.style.display = 'none';
         intermediarySection.style.display = 'none';
+        if (companyOwnerNameGroup) {
+            companyOwnerNameGroup.style.display = 'none';
+            document.getElementById('company-owner-name').required = false;
+        }
         return;
     }
-    
+
     // Hide business details display - we don't want to show this info
     businessInfoDiv.style.display = 'none';
-    
+
     // Show intermediary business info section if it's Intermediary - WW reporting
     if (selectedBusiness.insuranceType === 'intermediary-ww') {
         intermediarySection.style.display = 'block';
@@ -538,6 +561,12 @@ function updateBusinessInfo(businessId) {
         document.getElementById('intermediary-registration-mapping').required = true;
         document.getElementById('intermediary-owner-mapping').required = true;
         document.getElementById('intermediary-opening-date-mapping').required = true;
+
+        // Show and make Company Owner Name field required for intermediary WW
+        if (companyOwnerNameGroup) {
+            companyOwnerNameGroup.style.display = 'block';
+            document.getElementById('company-owner-name').required = true;
+        }
     } else {
         intermediarySection.style.display = 'none';
         // Remove required attribute
@@ -545,6 +574,12 @@ function updateBusinessInfo(businessId) {
         document.getElementById('intermediary-registration-mapping').required = false;
         document.getElementById('intermediary-owner-mapping').required = false;
         document.getElementById('intermediary-opening-date-mapping').required = false;
+
+        // Hide Company Owner Name field for non-intermediary WW businesses
+        if (companyOwnerNameGroup) {
+            companyOwnerNameGroup.style.display = 'none';
+            document.getElementById('company-owner-name').required = false;
+        }
     }
 }
 
@@ -717,7 +752,8 @@ function clearAllSelection() {
 
 function initializeBulkStatusModal() {
     // Reset form
-    document.getElementById('bulk-status').value = '';
+    const bulkStatusField = document.getElementById('bulk-status');
+    if (bulkStatusField) bulkStatusField.value = '';
 
     // Add real-time validation
     const statusSelect = document.getElementById('bulk-status');
@@ -749,7 +785,6 @@ function handleCreatePartner(e) {
         businessId: document.getElementById('partner-business').value,
         businessName: businesses.find(b => b.id === document.getElementById('partner-business').value)?.name || '',
         deliveryArea: document.getElementById('partner-delivery-area').value,
-        pocEmail: generatePOCEmail(document.getElementById('partner-name').value),
         status: 'preparing',
         ceoEmail: document.getElementById('partner-ceo-email').value,
         createdAt: new Date().toISOString().split('T')[0],
@@ -871,12 +906,16 @@ function handleCreateCompany(e) {
     const newCompany = {
         id: nextCompanyId,
         name: document.getElementById('company-name').value,
+        phone: document.getElementById('company-phone').value,
+        address: document.getElementById('company-address').value,
         businessId: document.getElementById('company-business').value,
         businessName: selectedBusiness?.name || '',
         deliveryArea: document.getElementById('company-delivery-zone').value,
-        pocEmail: generatePOCEmail(document.getElementById('company-name').value),
         status: 'preparing',
-        ceoEmail: document.getElementById('company-ceo-email').value,
+        adminName: document.getElementById('company-admin-name').value,
+        adminPhone: document.getElementById('company-admin-phone').value,
+        adminId: document.getElementById('company-admin-id').value,
+        companyOwnerName: document.getElementById('company-owner-name').value,
         createdAt: new Date().toISOString().split('T')[0],
         contractId: `CON${String(nextCompanyId).padStart(3, '0')}`
     };
@@ -891,8 +930,6 @@ function handleCreateCompany(e) {
         };
     }
     
-    // CEO email validation is now handled by the verification system
-    // No need for additional validation here since form validation already checks verification status
     
     companies.unshift(newCompany); // Add to the beginning of the array (top of list)
     saveCompaniesToLocalStorage(); // Save to localStorage
@@ -907,24 +944,14 @@ function handleCreateCompany(e) {
     console.log('Company created and added:', newCompany);
     console.log('Total companies now:', companies.length);
     renderCompaniesTable();
+
+    // Refresh business dropdown to update disabled states for Single Partner businesses
+    populateBusinessOptions();
     renderBusinessesTable(); // Update business table to show new company count
     
     // Clear the form
     document.getElementById('create-company-form').reset();
     
-    // Reset CEO verification attempts for next use
-    window.ceoVerificationAttempts = 0;
-    
-    // Reset CEO verification status displays
-    updateVerificationStatus('ceo-verification', 'pending', 'CEO must have existing Partner Center account');
-    
-    // Reset CEO verify button
-    const ceoVerifyButton = document.getElementById('verify-ceo-btn');
-    if (ceoVerifyButton) {
-        ceoVerifyButton.disabled = false;
-        ceoVerifyButton.innerHTML = '<i class="fas fa-check"></i> Verify with Partner Center';
-        ceoVerifyButton.style.background = '';
-    }
     
     // Create contract (simulation)
     createContract(newCompany.id);
@@ -1009,10 +1036,11 @@ function validateCompanyForm() {
         { id: 'company-name', label: 'Company Name' },
         { id: 'company-phone', label: 'Company Phone' },
         { id: 'company-address', label: 'Company Address' },
-        { id: 'company-insurance', label: 'Company Insurance' },
         { id: 'company-delivery-zone', label: 'Delivery Zone' },
         { id: 'company-business', label: 'Business ID' },
-        { id: 'company-ceo-email', label: 'CEO Email' }
+        { id: 'company-admin-name', label: 'Admin Name' },
+        { id: 'company-admin-phone', label: 'Admin Phone Number' },
+        { id: 'company-admin-id', label: 'Admin ID' }
     ];
     
     // Check all required fields are filled
@@ -1026,13 +1054,26 @@ function validateCompanyForm() {
             };
         }
     }
-    
-    // Check if intermediary business info is required and complete
+
+    // Check if selected business is a Single Partner with maximum companies reached
     const selectedBusinessId = document.getElementById('company-business').value;
     const selectedBusiness = businesses.find(b => b.id === selectedBusinessId);
+
+    if (selectedBusiness && selectedBusiness.insuranceType === 'single') {
+        const existingCompaniesCount = companies.filter(c => c.businessId === selectedBusinessId).length;
+        if (existingCompaniesCount >= 1) {
+            return {
+                isValid: false,
+                message: `Cannot create company for business "${selectedBusiness.name}". Single Partner businesses can only have one company mapped to them.`
+            };
+        }
+    }
+
+    // Check if intermediary business info is required and complete
     
     if (selectedBusiness && selectedBusiness.insuranceType === 'intermediary-ww') {
         const intermediaryFields = [
+            { id: 'company-owner-name', label: 'Company Owner Name' },
             { id: 'intermediary-business-name-mapping', label: 'Intermediary Business Name' },
             { id: 'intermediary-registration-mapping', label: 'Intermediary Registration Number' },
             { id: 'intermediary-owner-mapping', label: 'Intermediary Owner Name' },
@@ -1048,18 +1089,19 @@ function validateCompanyForm() {
                 };
             }
         }
+
+        // Check if registration number is verified
+        const registrationStatus = document.getElementById('registration-verification');
+        const isRegistrationVerified = registrationStatus && registrationStatus.classList.contains('verified');
+
+        if (!isRegistrationVerified) {
+            return {
+                isValid: false,
+                message: 'Please verify the intermediary business registration number before creating the company'
+            };
+        }
     }
     
-    // Check CEO email verification status
-    const ceoVerification = document.getElementById('ceo-verification');
-    console.log('CEO verification element:', ceoVerification);
-    console.log('CEO has verified class:', ceoVerification?.classList.contains('verified'));
-    if (!ceoVerification || !ceoVerification.classList.contains('verified')) {
-        return {
-            isValid: false,
-            message: 'CEO email must be verified with Partner Center before creating company'
-        };
-    }
     
     return { isValid: true };
 }
@@ -1149,20 +1191,39 @@ function initializeFormValidation() {
     
     // Insurance type change listener removed - intermediary logic is now only in Company form
     
-    // Add event listener for CEO email input to reset verification
-    const ceoEmailInput = document.getElementById('company-ceo-email');
-    if (ceoEmailInput) {
-        ceoEmailInput.addEventListener('input', function() {
-            // Reset verification attempts when user modifies email field
-            if (window.ceoVerificationAttempts > 0) {
-                window.ceoVerificationAttempts = 0;
-                updateVerificationStatus('ceo-verification', 'pending', 'CEO must have existing Partner Center account');
-                const verifyButton = document.getElementById('verify-ceo-btn');
+    // Add event listener for Admin ID input to reset verification
+    const adminIdInput = document.getElementById('company-admin-id');
+    if (adminIdInput) {
+        adminIdInput.addEventListener('input', function() {
+            // Reset verification attempts when user modifies admin ID field
+            if (window.adminVerificationAttempts > 0) {
+                window.adminVerificationAttempts = 0;
+                updateVerificationStatus('admin-verification', 'pending', 'Admin must have existing Partner Centre account');
+                const verifyButton = document.getElementById('verify-admin-btn');
                 if (verifyButton) {
                     verifyButton.disabled = false;
-                    verifyButton.innerHTML = '<i class="fas fa-check"></i> Verify with Partner Center';
+                    verifyButton.innerHTML = '<i class="fas fa-check"></i> Verify with Partner Centre';
                     verifyButton.style.background = '';
                 }
+            }
+        });
+    }
+
+    // Add event listener for intermediary registration field
+    const registrationField = document.getElementById('intermediary-registration-mapping');
+    if (registrationField) {
+        registrationField.addEventListener('input', function() {
+            // Reset registration verification attempts when user modifies field
+            if (window.registrationVerificationAttempts > 0) {
+                window.registrationVerificationAttempts = 0;
+                updateVerificationStatus('registration-verification', 'pending', 'Press Enter or click Verify to validate registration number');
+                const verifyButton = document.getElementById('verify-registration-btn');
+                if (verifyButton) {
+                    verifyButton.disabled = false;
+                    verifyButton.innerHTML = '<i class="fas fa-check"></i> Verify';
+                    verifyButton.style.background = '';
+                }
+                updateSubmitButtonState();
             }
         });
     }
@@ -1182,7 +1243,8 @@ function simulateVerification(business) {
 
 
 function applyBulkStatus() {
-    const newStatus = document.getElementById('bulk-status').value;
+    const bulkStatusField = document.getElementById('bulk-status');
+    const newStatus = bulkStatusField ? bulkStatusField.value : '';
 
     if (!newStatus) {
         showAlert('Please select a status', 'error');
@@ -1231,7 +1293,8 @@ function applyBulkStatus() {
         closeModal('bulk-status-modal');
 
         // Reset form
-        document.getElementById('bulk-status').value = '';
+        const resetBulkStatusField = document.getElementById('bulk-status');
+        if (resetBulkStatusField) resetBulkStatusField.value = '';
 
         showAlert(`Status updated for ${updatedCount} company/companies`, 'success');
 
@@ -1254,10 +1317,6 @@ function isValidStatusTransition(currentStatus, newStatus) {
 }
 
 // Utility Functions
-function generatePOCEmail(partnerName) {
-    const cleanName = partnerName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    return `3pl.${cleanName}.ext@hungerstation.com`;
-}
 
 // Simple validateCEOEmail for backward compatibility with partner creation
 function validateCEOEmail(email) {
@@ -1405,17 +1464,113 @@ function verifyDetailBankAccount() {
     }, 2000);
 }
 
-// Handle tax document changes
+// Handle tax document upload during business registration
+function handleTaxDocumentUpload(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+
+        // Simulate document upload and generate sharable link
+        const sharableLink = generateTaxDocumentShareableLink(file.name);
+
+        // Show the sharable link container
+        const linkContainer = document.getElementById('tax-document-link-container');
+        const linkUrl = document.getElementById('tax-document-link-url');
+
+        if (linkContainer && linkUrl) {
+            linkUrl.textContent = sharableLink;
+            linkContainer.style.display = 'block';
+            showAlert(`Tax document "${file.name}" uploaded successfully. Sharable link generated.`, 'success');
+        }
+    }
+}
+
+// Handle tax document changes in business details
 function handleTaxDocumentChange(input) {
     if (input.files && input.files[0]) {
         const file = input.files[0];
         const taxDocumentName = document.getElementById('detail-tax-document-name');
-        
+
         if (taxDocumentName) {
             taxDocumentName.textContent = file.name;
-            showAlert(`New tax document "${file.name}" selected for upload`, 'success');
+
+            // Generate new sharable link for the updated document
+            const newSharableLink = generateTaxDocumentShareableLink(file.name);
+            const linkUrl = document.getElementById('detail-tax-document-link-url');
+
+            if (linkUrl) {
+                linkUrl.textContent = newSharableLink;
+            }
+
+            showAlert(`New tax document "${file.name}" selected for upload. New sharable link generated.`, 'success');
         }
     }
+}
+
+// Generate a sharable link for tax documents
+function generateTaxDocumentShareableLink(fileName) {
+    // In a real implementation, this would call an API to upload the document and get a secure sharable link
+    // For now, we'll generate a mock link with a unique identifier
+    const uniqueId = generateUniqueId();
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+    return `https://3pl-docs.hungerstation.com/tax-documents/share/${uniqueId}/${sanitizedFileName}`;
+}
+
+// Generate unique ID for document links
+function generateUniqueId() {
+    return 'doc_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+}
+
+// Copy tax document link to clipboard (for new registrations)
+function copyTaxDocumentLink() {
+    const linkUrl = document.getElementById('tax-document-link-url');
+    if (linkUrl) {
+        copyToClipboard(linkUrl.textContent);
+        showAlert('Tax document sharable link copied to clipboard', 'success');
+    }
+}
+
+// Copy existing tax document link to clipboard
+function copyExistingTaxDocumentLink() {
+    const linkUrl = document.getElementById('detail-tax-document-link-url');
+    if (linkUrl) {
+        copyToClipboard(linkUrl.textContent);
+        showAlert('Tax document sharable link copied to clipboard', 'success');
+    }
+}
+
+// Utility function to copy text to clipboard
+function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('Text copied to clipboard');
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+// Fallback method for copying to clipboard
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+        console.log('Fallback: Text copied to clipboard');
+    } catch (err) {
+        console.error('Fallback: Failed to copy text: ', err);
+    }
+
+    document.body.removeChild(textArea);
 }
 
 // View tax document (prototype)
@@ -1527,10 +1682,15 @@ function editPartner(partnerId) {
     const partner = partners.find(p => p.id === partnerId);
     if (partner) {
         // Populate edit form with partner data
-        document.getElementById('partner-name').value = partner.name;
-        document.getElementById('partner-business').value = partner.businessId;
-        document.getElementById('partner-delivery-area').value = partner.deliveryArea;
-        document.getElementById('partner-ceo-email').value = partner.ceoEmail;
+        const partnerNameField = document.getElementById('partner-name');
+        const partnerBusinessField = document.getElementById('partner-business');
+        const partnerDeliveryAreaField = document.getElementById('partner-delivery-area');
+        const partnerCeoEmailField = document.getElementById('partner-ceo-email');
+
+        if (partnerNameField) partnerNameField.value = partner.name;
+        if (partnerBusinessField) partnerBusinessField.value = partner.businessId;
+        if (partnerDeliveryAreaField) partnerDeliveryAreaField.value = partner.deliveryArea;
+        if (partnerCeoEmailField) partnerCeoEmailField.value = partner.ceoEmail;
         
         openModal('create-partner-modal');
         
@@ -1564,16 +1724,23 @@ function editBusiness(businessId) {
         document.getElementById('business-details-title').textContent = `${business.name} - Business Details`;
         
         // Basic Business Information
-        document.getElementById('detail-business-name').value = business.name;
-        document.getElementById('detail-business-opening-date').value = business.openingDate || business.createdAt || new Date().toISOString().split('T')[0];
-        document.getElementById('detail-business-location').value = business.location || '';
-        document.getElementById('detail-head-office-location').value = business.headOfficeLocation || '';
+        const detailBusinessNameField = document.getElementById('detail-business-name');
+        const detailOpeningDateField = document.getElementById('detail-business-opening-date');
+        const detailLocationField = document.getElementById('detail-business-location');
+        const detailHeadOfficeField = document.getElementById('detail-head-office-location');
+
+        if (detailBusinessNameField) detailBusinessNameField.value = business.name;
+        if (detailOpeningDateField) detailOpeningDateField.value = business.openingDate || business.createdAt || new Date().toISOString().split('T')[0];
+        if (detailLocationField) detailLocationField.value = business.location || '';
+        if (detailHeadOfficeField) detailHeadOfficeField.value = business.headOfficeLocation || '';
         
         // Business Registration & Verification
         const brnInput = document.getElementById('detail-business-brn');
-        brnInput.value = business.brn;
-        // Store original value to detect changes
-        brnInput.dataset.originalValue = business.brn;
+        if (brnInput) {
+            brnInput.value = business.brn;
+            // Store original value to detect changes
+            brnInput.dataset.originalValue = business.brn;
+        }
         
         // Update BRN verification status display
         const brnVerification = document.getElementById('detail-brn-verification');
@@ -1598,15 +1765,20 @@ function editBusiness(businessId) {
         const bankNameInput = document.getElementById('detail-bank-name');
         const bankNumberInput = document.getElementById('detail-bank-number');
         const accountHolderInput = document.getElementById('detail-account-holder');
-        
-        bankNameInput.value = business.bankName || '';
-        bankNumberInput.value = business.bankNumber || '';
-        accountHolderInput.value = business.accountHolder || '';
-        
-        // Store original values to detect changes
-        bankNameInput.dataset.originalValue = business.bankName || '';
-        bankNumberInput.dataset.originalValue = business.bankNumber || '';
-        accountHolderInput.dataset.originalValue = business.accountHolder || '';
+
+        if (bankNameInput) {
+            bankNameInput.value = business.bankName || '';
+            // Store original values to detect changes
+            bankNameInput.dataset.originalValue = business.bankName || '';
+        }
+        if (bankNumberInput) {
+            bankNumberInput.value = business.bankNumber || '';
+            bankNumberInput.dataset.originalValue = business.bankNumber || '';
+        }
+        if (accountHolderInput) {
+            accountHolderInput.value = business.accountHolder || '';
+            accountHolderInput.dataset.originalValue = business.accountHolder || '';
+        }
         
         // Update Bank verification status display
         const bankVerification = document.getElementById('detail-bank-verification');
@@ -1620,22 +1792,35 @@ function editBusiness(businessId) {
         if (bankButton) bankButton.style.display = 'none';
         
         // Business Owner Information
-        document.getElementById('detail-owner-name').value = business.ownerName || '';
-        document.getElementById('detail-owner-phone').value = business.ownerPhone || '';
-        document.getElementById('detail-owner-birthday').value = business.ownerBirthday || '';
-        
+        const detailOwnerNameField = document.getElementById('detail-owner-name');
+        const detailOwnerPhoneField = document.getElementById('detail-owner-phone');
+        const detailOwnerBirthdayField = document.getElementById('detail-owner-birthday');
+
+        if (detailOwnerNameField) detailOwnerNameField.value = business.ownerName || '';
+        if (detailOwnerPhoneField) detailOwnerPhoneField.value = business.ownerPhone || '';
+        if (detailOwnerBirthdayField) detailOwnerBirthdayField.value = business.ownerBirthday || '';
+
         // Business Type & Insurance
-        document.getElementById('detail-business-type').value = business.type || '';
-        document.getElementById('detail-insurance-type').value = business.insuranceType || '';
-        
+        const detailBusinessTypeField = document.getElementById('detail-business-type');
+        const detailInsuranceTypeField = document.getElementById('detail-insurance-type');
+
+        if (detailBusinessTypeField) detailBusinessTypeField.value = business.type || '';
+        if (detailInsuranceTypeField) detailInsuranceTypeField.value = business.insuranceType || '';
+
         // System Information
-        document.getElementById('detail-business-id').value = business.id;
-        document.getElementById('detail-sap-code').value = business.sapCode || '';
-        document.getElementById('detail-companies-count').value = business.companiesCount || 0;
-        document.getElementById('detail-created-date').value = business.createdAt || new Date().toISOString().split('T')[0];
-        
+        const detailBusinessIdField = document.getElementById('detail-business-id');
+        const detailSapCodeField = document.getElementById('detail-sap-code');
+        const detailCompaniesCountField = document.getElementById('detail-companies-count');
+        const detailBusinessCreatedDateField = document.getElementById('detail-created-date');
+
+        if (detailBusinessIdField) detailBusinessIdField.value = business.id;
+        if (detailSapCodeField) detailSapCodeField.value = business.sapCode || '';
+        if (detailCompaniesCountField) detailCompaniesCountField.value = business.companiesCount || 0;
+        if (detailBusinessCreatedDateField) detailBusinessCreatedDateField.value = business.createdAt || new Date().toISOString().split('T')[0];
+
         // Store the business ID for updating
-        document.getElementById('business-details-form').dataset.businessId = businessId;
+        const businessDetailsForm = document.getElementById('business-details-form');
+        if (businessDetailsForm) businessDetailsForm.dataset.businessId = businessId;
         
         // Navigate to details section
         showSection('business-details');
@@ -1652,37 +1837,75 @@ function editCompany(companyId) {
         const associatedBusiness = businesses.find(b => b.id === company.businessId);
         
         // Populate detail form with all company data using the creation form structure
-        document.getElementById('detail-company-name').value = company.name;
-        document.getElementById('detail-company-phone').value = company.phone || '';
-        document.getElementById('detail-company-address').value = company.address || '';
-        document.getElementById('detail-company-insurance').value = company.insurance || '';
-        document.getElementById('detail-company-delivery-zone').value = company.deliveryArea || '';
-        
+        const detailNameField = document.getElementById('detail-company-name');
+        const detailPhoneField = document.getElementById('detail-company-phone');
+        const detailAddressField = document.getElementById('detail-company-address');
+        const detailInsuranceField = document.getElementById('detail-company-insurance');
+        const detailDeliveryZoneField = document.getElementById('detail-company-delivery-zone');
+
+        if (detailNameField) detailNameField.value = company.name;
+        if (detailPhoneField) detailPhoneField.value = company.phone || '';
+        if (detailAddressField) detailAddressField.value = company.address || '';
+        if (detailInsuranceField) detailInsuranceField.value = company.insurance || '';
+        if (detailDeliveryZoneField) detailDeliveryZoneField.value = company.deliveryArea || '';
+
         // Business Mapping
-        document.getElementById('detail-company-business').value = company.businessId || '';
-        document.getElementById('detail-company-business-name').value = company.businessName || (associatedBusiness ? associatedBusiness.name : '');
+        const detailBusinessField = document.getElementById('detail-company-business');
+        const detailBusinessNameField = document.getElementById('detail-company-business-name');
+
+        if (detailBusinessField) detailBusinessField.value = company.businessId || '';
+        if (detailBusinessNameField) detailBusinessNameField.value = company.businessName || (associatedBusiness ? associatedBusiness.name : '');
+
+        // Show Company Owner Name field for intermediary WW businesses
+        const detailOwnerNameRow = document.getElementById('detail-company-owner-name-row');
+        const detailOwnerNameField = document.getElementById('detail-company-owner-name');
+
+        if (associatedBusiness && associatedBusiness.insuranceType === 'intermediary-ww') {
+            if (detailOwnerNameRow) {
+                detailOwnerNameRow.style.display = 'block';
+                if (detailOwnerNameField) detailOwnerNameField.value = company.companyOwnerName || '';
+            }
+        } else {
+            if (detailOwnerNameRow) {
+                detailOwnerNameRow.style.display = 'none';
+            }
+        }
         
         // Show intermediary section if applicable
         const intermediarySection = document.getElementById('detail-intermediary-business-info');
         if (company.intermediaryBusinessInfo) {
-            intermediarySection.style.display = 'block';
-            document.getElementById('detail-intermediary-business-name').value = company.intermediaryBusinessInfo.businessName || '';
-            document.getElementById('detail-intermediary-registration').value = company.intermediaryBusinessInfo.registrationNumber || '';
-            document.getElementById('detail-intermediary-owner').value = company.intermediaryBusinessInfo.ownerName || '';
-            document.getElementById('detail-intermediary-opening-date').value = company.intermediaryBusinessInfo.openingDate || '';
+            if (intermediarySection) intermediarySection.style.display = 'block';
+
+            const intermBusinessNameField = document.getElementById('detail-intermediary-business-name');
+            const intermRegistrationField = document.getElementById('detail-intermediary-registration');
+            const intermOwnerField = document.getElementById('detail-intermediary-owner');
+            const intermOpeningDateField = document.getElementById('detail-intermediary-opening-date');
+
+            if (intermBusinessNameField) intermBusinessNameField.value = company.intermediaryBusinessInfo.businessName || '';
+            if (intermRegistrationField) intermRegistrationField.value = company.intermediaryBusinessInfo.registrationNumber || '';
+            if (intermOwnerField) intermOwnerField.value = company.intermediaryBusinessInfo.ownerName || '';
+            if (intermOpeningDateField) intermOpeningDateField.value = company.intermediaryBusinessInfo.openingDate || '';
         } else {
-            intermediarySection.style.display = 'none';
+            if (intermediarySection) intermediarySection.style.display = 'none';
         }
         
-        // CEO & Partner Center Integration
-        document.getElementById('detail-company-ceo-email').value = company.ceoEmail || '';
+        // Company Admin Integration
+        const adminNameField = document.getElementById('detail-company-admin-name');
+        const adminPhoneField = document.getElementById('detail-company-admin-phone');
+        const adminIdField = document.getElementById('detail-company-admin-id');
+
+        if (adminNameField) adminNameField.value = company.adminName || '';
+        if (adminPhoneField) adminPhoneField.value = company.adminPhone || '';
+        if (adminIdField) adminIdField.value = company.adminId || '';
         
         // Company Status Management - Header Dropdown
         const statusSelect = document.getElementById('detail-company-status-header');
-        statusSelect.value = company.status || '';
-        // Store original status to track changes
-        statusSelect.dataset.originalValue = company.status || '';
-        
+        if (statusSelect) {
+            statusSelect.value = company.status || '';
+            // Store original status to track changes
+            statusSelect.dataset.originalValue = company.status || '';
+        }
+
         // Contract & System Information
         const contractName = document.getElementById('detail-contract-name');
         if (contractName) {
@@ -1690,12 +1913,18 @@ function editCompany(companyId) {
             const filename = `Service_Agreement_${company.contractId || 'CON001'}.pdf`;
             contractName.textContent = filename;
         }
-        
-        document.getElementById('detail-company-id').value = company.id;
-        document.getElementById('detail-company-created-date').value = company.createdAt || '';
+
+        const detailCompanyIdField = document.getElementById('detail-company-id');
+        const detailContractIdField = document.getElementById('detail-company-contract');
+        const detailCreatedDateField = document.getElementById('detail-company-created-date');
+
+        if (detailCompanyIdField) detailCompanyIdField.value = company.id;
+        if (detailContractIdField) detailContractIdField.value = company.contractId || '';
+        if (detailCreatedDateField) detailCreatedDateField.value = company.createdAt || '';
         
         // Store the company ID for updating
-        document.getElementById('company-details-form').dataset.companyId = companyId;
+        const companyDetailsForm = document.getElementById('company-details-form');
+        if (companyDetailsForm) companyDetailsForm.dataset.companyId = companyId;
         
         // Reset status change confirmation
         const confirmation = document.getElementById('status-change-confirmation');
@@ -1762,9 +1991,18 @@ function handleUpdateCompany(e) {
         company.name = document.getElementById('detail-company-name').value;
         company.phone = document.getElementById('detail-company-phone').value;
         company.address = document.getElementById('detail-company-address').value;
-        company.insurance = document.getElementById('detail-company-insurance').value;
         company.deliveryArea = document.getElementById('detail-company-delivery-zone').value;
-        
+
+        // Update admin fields (name and phone are editable, ID is not)
+        company.adminName = document.getElementById('detail-company-admin-name').value;
+        company.adminPhone = document.getElementById('detail-company-admin-phone').value;
+
+        // Update Company Owner Name if field is visible (for intermediary WW businesses)
+        const ownerNameField = document.getElementById('detail-company-owner-name');
+        if (ownerNameField && ownerNameField.offsetParent !== null) {
+            company.companyOwnerName = ownerNameField.value;
+        }
+
         // Update status (very important)
         company.status = document.getElementById('detail-company-status-header').value;
         
@@ -1794,13 +2032,12 @@ function viewBusinessDetails(businessId) {
 // Export functionality
 function exportPartnersData() {
     const csvContent = [
-        ['ID', 'Name', 'Business', 'Delivery Area', 'POC Email', 'Status', 'CEO Email', 'Created At'].join(','),
+        ['ID', 'Name', 'Business', 'Delivery Area', 'Status', 'CEO Email', 'Created At'].join(','),
         ...partners.map(partner => [
             partner.id,
             `"${partner.name}"`,
             `"${partner.businessName}"`,
             `"${partner.deliveryArea}"`,
-            `"${partner.pocEmail}"`,
             partner.status,
             `"${partner.ceoEmail}"`,
             partner.createdAt
@@ -1926,58 +2163,116 @@ function verifyBRN(brnNumber) {
     }, 2000);
 }
 
-function verifyCEOEmail(email) {
-    if (!email || email.trim() === '') {
-        updateVerificationStatus('ceo-verification', 'pending', 'Enter CEO email to verify');
+function verifyAdminID(adminId) {
+    if (!adminId || adminId.trim() === '') {
+        updateVerificationStatus('admin-verification', 'pending', 'Enter Admin ID to verify');
         return;
     }
-    
+
     // Initialize attempt counter if not exists
-    if (!window.ceoVerificationAttempts) {
-        window.ceoVerificationAttempts = 0;
+    if (!window.adminVerificationAttempts) {
+        window.adminVerificationAttempts = 0;
     }
-    
-    window.ceoVerificationAttempts++;
-    console.log('Starting CEO email verification attempt', window.ceoVerificationAttempts);
-    
+
+    window.adminVerificationAttempts++;
+    console.log('Starting Admin ID verification attempt', window.adminVerificationAttempts);
+
     // Disable verify button during verification
-    const verifyButton = document.getElementById('verify-ceo-btn');
+    const verifyButton = document.getElementById('verify-admin-btn');
     if (verifyButton) {
         verifyButton.disabled = true;
         verifyButton.textContent = 'Verifying...';
     }
+
+    updateVerificationStatus('admin-verification', 'verifying', `Verifying with Partner Centre... (Attempt ${window.adminVerificationAttempts}/2)`);
     
-    updateVerificationStatus('ceo-verification', 'verifying', `Verifying with Partner Center... (Attempt ${window.ceoVerificationAttempts}/2)`);
-    
-    // Simulate API call to Partner Center
+    // Simulate API call to Partner Centre
     setTimeout(() => {
-        if (window.ceoVerificationAttempts < 2) {
+        if (window.adminVerificationAttempts < 2) {
             // First attempt fails
-            console.log('CEO email verification attempt', window.ceoVerificationAttempts, 'failed');
-            updateVerificationStatus('ceo-verification', 'failed', 'CEO email not found in Partner Center. Please check and try again.');
+            console.log('Admin ID verification attempt', window.adminVerificationAttempts, 'failed');
+            updateVerificationStatus('admin-verification', 'failed', 'Admin ID not found in Partner Centre. Please check and try again.');
             // Re-enable the verify button for retry
-            const verifyButton = document.getElementById('verify-ceo-btn');
+            const verifyButton = document.getElementById('verify-admin-btn');
             if (verifyButton) {
                 verifyButton.disabled = false;
-                verifyButton.innerHTML = '<i class="fas fa-check"></i> Verify with Partner Center';
+                verifyButton.innerHTML = '<i class="fas fa-check"></i> Verify with Partner Centre';
             }
         } else {
             // Second attempt succeeds
-            console.log('CEO email verification attempt', window.ceoVerificationAttempts, 'succeeded');
-            updateVerificationStatus('ceo-verification', 'verified', 'CEO email verified in Partner Center');
-            
+            console.log('Admin ID verification attempt', window.adminVerificationAttempts, 'succeeded');
+            updateVerificationStatus('admin-verification', 'verified', 'Admin ID verified in Partner Centre');
+
             // Update verify button to match other verification styles
-            const verifyButton = document.getElementById('verify-ceo-btn');
+            const verifyButton = document.getElementById('verify-admin-btn');
             if (verifyButton) {
                 verifyButton.disabled = true;
                 verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
                 verifyButton.style.background = '#4CAF50';
             }
-            
-            window.ceoVerificationAttempts = 0; // Reset for next time
+
+            window.adminVerificationAttempts = 0; // Reset for next time
         }
     }, 2000);
 }
+
+// Verify intermediary business registration number
+function verifyIntermediaryRegistration(registrationNumber) {
+    if (!registrationNumber || registrationNumber.trim() === '') {
+        updateVerificationStatus('registration-verification', 'pending', 'Enter registration number to verify');
+        return;
+    }
+
+    // Initialize attempt counter if not exists
+    if (!window.registrationVerificationAttempts) {
+        window.registrationVerificationAttempts = 0;
+    }
+
+    window.registrationVerificationAttempts++;
+    console.log('Starting Registration number verification attempt', window.registrationVerificationAttempts);
+
+    // Disable verify button during verification
+    const verifyButton = document.getElementById('verify-registration-btn');
+    if (verifyButton) {
+        verifyButton.disabled = true;
+        verifyButton.textContent = 'Verifying...';
+    }
+
+    updateVerificationStatus('registration-verification', 'verifying', `Verifying with business registry... (Attempt ${window.registrationVerificationAttempts}/2)`);
+
+    // Simulate API call to business registry
+    setTimeout(() => {
+        if (window.registrationVerificationAttempts < 2) {
+            // First attempt fails
+            console.log('Registration verification attempt', window.registrationVerificationAttempts, 'failed');
+            updateVerificationStatus('registration-verification', 'failed', 'Registration number not found in business registry. Please check and try again.');
+            // Re-enable the verify button for retry
+            const verifyButton = document.getElementById('verify-registration-btn');
+            if (verifyButton) {
+                verifyButton.disabled = false;
+                verifyButton.innerHTML = '<i class="fas fa-check"></i> Verify';
+            }
+        } else {
+            // Second attempt succeeds
+            console.log('Registration verification attempt', window.registrationVerificationAttempts, 'succeeded');
+            updateVerificationStatus('registration-verification', 'verified', 'Registration number verified in business registry');
+
+            // Update verify button to match other verification styles
+            const verifyButton = document.getElementById('verify-registration-btn');
+            if (verifyButton) {
+                verifyButton.disabled = true;
+                verifyButton.innerHTML = '<i class="fas fa-check-circle"></i> Verified';
+                verifyButton.style.background = '#4CAF50';
+            }
+
+            window.registrationVerificationAttempts = 0; // Reset for next time
+        }
+
+        // Update form validation state
+        updateSubmitButtonState();
+    }, 2000);
+}
+
 
 function verifyBankAccount() {
     // Collect all bank information
@@ -2400,10 +2695,11 @@ function createCompanyFromBulk(data) {
     const newCompany = {
         id: Math.max(...companies.map(c => c.id)) + 1,
         name: data.companyName,
+        phone: data.phone || '',
+        address: data.address || '',
         businessId: data.businessId,
         businessName: business ? business.name : '',
         deliveryArea: data.deliveryArea,
-        pocEmail: generatePOCEmail(data.companyName),
         status: 'preparing',
         ceoEmail: data.ceoEmail,
         createdAt: new Date().toISOString().split('T')[0],
@@ -2411,6 +2707,11 @@ function createCompanyFromBulk(data) {
     };
     
     companies.push(newCompany);
+
+    // Update business company count after bulk creation
+    if (business) {
+        business.companiesCount = companies.filter(c => c.businessId === business.id).length;
+    }
 }
 
 function downloadCSVTemplate() {
@@ -2589,10 +2890,6 @@ function generateDetailsHTML(type, data) {
             <div class="details-section">
                 <h3>Contact Information</h3>
                 <div class="details-grid">
-                    <div class="detail-item">
-                        <label>POC Email:</label>
-                        <span class="email-address">${data.pocEmail}</span>
-                    </div>
                     <div class="detail-item">
                         <label>CEO Email:</label>
                         <span class="email-address">${data.ceoEmail || 'N/A'}</span>

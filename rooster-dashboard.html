@@ -18,7 +18,7 @@
             </div>
             <div class="prototype-badge">
                 <i class="fas fa-flask"></i>
-                PROTOTYPE - Not Final Product
+                PROTOTYPE - Not Final
             </div>
         </div>
         <nav class="header-nav">
@@ -29,7 +29,7 @@
             <a href="#" class="nav-item">Payments</a>
             <a href="#" class="nav-item">Workers</a>
             <a href="#" class="nav-item">City settings</a>
-            <a href="#" class="nav-item active">3PL management</a>
+            <a href="#" class="nav-item active">Company management</a>
         </nav>
         <div class="header-right">
             <span class="city-selector">
@@ -148,10 +148,6 @@
                                         Delivery area
                                         <i class="fas fa-sort"></i>
                                     </th>
-                                    <th class="poc-email-column">
-                                        POC email
-                                        <i class="fas fa-sort"></i>
-                                    </th>
                                     <th>
                                         Status
                                         <i class="fas fa-sort"></i>
@@ -226,8 +222,8 @@
                                         <textarea id="company-address" rows="2" required placeholder="Enter complete company address"></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <label for="Service commencement number">Company Insurance *</label>
-                                        <input type="text" id="company-insurance" required placeholder="Enter service commencement number">
+                                        <label for="Service commencement number">Service commencement number *</label>
+                                        <input type="text" id="service-commencement-number" required placeholder="Enter service commencement number">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -261,25 +257,39 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+                                    <div class="form-group" id="company-owner-name-group" style="display: none;">
+                                        <label for="company-owner-name">Company Owner Name *</label>
+                                        <div class="business-search">
+                                            <input type="text" id="company-owner-name" placeholder="Enter company owner name">
+                                        </div>
+                                        <small>Required for Intermediary WW reporting businesses</small>
+                                    </div>
                                 </div>
 
                                 <!-- Conditional Business Information Section for Intermediary WW -->
-                                <div id="intermediary-business-info" style="display: none; margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid #86b3fe;">
-                                    <h4 style="margin: 0 0 16px 0; color: #86b3fe;">Add Business Info</h4>
+                                <div id="intermediary-business-info" style="display: none; margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 8px;">
+                                    <h4 style="margin: 0 0 16px 0; color: #ffffff;">Add Business Info</h4>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="intermediary-business-name-mapping">Business Name *</label>
                                             <input type="text" id="intermediary-business-name-mapping" placeholder="Enter business name">
                                         </div>
                                         <div class="form-group">
-                                            <label for="intermediary-registration-mapping">Registration Number *</label>
-                                            <input type="text" id="intermediary-registration-mapping" placeholder="Enter registration number">
+                                            <label for="intermediary-registration-mapping">Business Registration Number (BRN)*</label>
+                                            <div class="verification-input">
+                                                <input type="text" id="intermediary-registration-mapping" placeholder="Enter registration number" onblur="verifyIntermediaryRegistration(this.value)">
+                                                <button type="button" class="verify-btn" id="verify-registration-btn" onclick="verifyIntermediaryRegistration(document.getElementById('intermediary-registration-mapping').value)">
+                                                    <i class="fas fa-check"></i> Verify
+                                                </button>
+                                            </div>
+                                            <div class="verification-status pending" id="registration-verification">
+                                                <i class="fas fa-clock"></i> Press Enter or click Verify to validate registration number
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-row" style="margin-top: 20px;">
                                         <div class="form-group">
-                                            <label for="intermediary-owner-mapping">Owner Name *</label>
+                                            <label for="intermediary-owner-mapping">Business Owner Name *</label>
                                             <input type="text" id="intermediary-owner-mapping" placeholder="Enter owner name">
                                         </div>
                                         <div class="form-group">
@@ -287,27 +297,38 @@
                                             <input type="date" id="intermediary-opening-date-mapping">
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
 
                             <div class="form-section">
-                                <h3>CEO & Partner Center Integration</h3>
+                                <h3>Company Admin</h3>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="company-ceo-email">CEO Email *</label>
-                                        <div class="ceo-email-input">
-                                            <input type="email" id="company-ceo-email" required placeholder="Enter CEO's email address" onblur="verifyCEOEmail(this.value)">
-                                            <button type="button" class="verify-btn" id="verify-ceo-btn" onclick="verifyCEOEmail(document.getElementById('company-ceo-email').value)">
-                                                <i class="fas fa-check"></i> Verify with Partner Center
+                                        <label for="company-admin-name">Admin Name *</label>
+                                        <input type="text" id="company-admin-name" required placeholder="Enter admin's full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="company-admin-phone">Admin Phone Number *</label>
+                                        <input type="tel" id="company-admin-phone" required placeholder="Enter admin's phone number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="company-admin-id">Admin ID *</label>
+                                        <div class="admin-id-input">
+                                            <input type="text" id="company-admin-id" required placeholder="Enter admin's Partner Centre ID" onblur="verifyAdminID(this.value)">
+                                            <button type="button" class="verify-btn" id="verify-admin-btn" onclick="verifyAdminID(document.getElementById('company-admin-id').value)">
+                                                <i class="fas fa-check"></i> Verify with Partner Centre
                                             </button>
                                         </div>
-                                        <div class="verification-status pending" id="ceo-verification">
-                                            <i class="fas fa-info-circle"></i> CEO must have existing Partner Center account
+                                        <div class="verification-status pending" id="admin-verification">
+                                            <i class="fas fa-info-circle"></i> Admin must have existing Partner Centre account
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mapping-note">
-                                    <p><strong>Important:</strong> The CEO email cannot be changed after company creation. Everything else can be modified later.</p>
+                                    <p><strong>Important:</strong> The Admin ID cannot be changed after company creation. Everything else can be modified later.</p>
                                 </div>
                             </div>
 
@@ -431,13 +452,23 @@
                                     <div class="form-group">
                                         <label for="tax-document">Tax Document *</label>
                                         <div class="file-upload">
-                                            <input type="file" id="tax-document" accept=".pdf,.jpg,.png,.doc,.docx" required>
+                                            <input type="file" id="tax-document" accept=".pdf,.jpg,.png,.doc,.docx" required onchange="handleTaxDocumentUpload(this)">
                                             <div class="file-upload-text">
                                                 <i class="fas fa-upload"></i>
                                                 Click to upload or drag and drop
                                             </div>
                                         </div>
                                         <small>Upload tax registration document (PDF, JPG, PNG, DOC)</small>
+                                        <div class="document-link-container" id="tax-document-link-container" style="display: none;">
+                                            <div class="document-link">
+                                                <i class="fas fa-link"></i>
+                                                <span id="tax-document-link-url">https://example.com/documents/share/abc123</span>
+                                                <button type="button" class="copy-link-btn" onclick="copyTaxDocumentLink()" title="Copy sharable link">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <small class="link-description">Sharable link for tax document</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -598,6 +629,19 @@
                                                 <button type="button" class="view-document-btn" onclick="viewTaxDocument()">
                                                     <i class="fas fa-eye"></i> View
                                                 </button>
+                                                <button type="button" class="share-link-btn" onclick="copyExistingTaxDocumentLink()" title="Copy sharable link">
+                                                    <i class="fas fa-link"></i> Share
+                                                </button>
+                                            </div>
+                                            <div class="document-link-display" id="detail-tax-document-link-display">
+                                                <div class="document-link">
+                                                    <i class="fas fa-link"></i>
+                                                    <span id="detail-tax-document-link-url">https://example.com/documents/share/existing-doc-123</span>
+                                                    <button type="button" class="copy-link-btn" onclick="copyExistingTaxDocumentLink()" title="Copy sharable link">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <small class="link-description">Sharable link for current tax document</small>
                                             </div>
                                             <div class="file-upload-replacement">
                                                 <input type="file" id="detail-tax-document" accept=".pdf,.jpg,.png,.doc,.docx" onchange="handleTaxDocumentChange(this)">
@@ -768,8 +812,8 @@
                                         <textarea id="detail-company-address" rows="2" required placeholder="Enter complete company address"></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <label for="Service commencement number">Company Insurance *</label>
-                                        <input type="text" id="detail-company-insurance" required placeholder="Enter service commencement number">
+                                        <label for="Service commencement number">Service commencement number *</label>
+                                        <input type="text" id="detail-service-commencement-number" required placeholder="Enter service commencement number">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -794,23 +838,32 @@
                                         <input type="text" id="detail-company-business-name" class="readonly-field" readonly>
                                     </div>
                                 </div>
+                                <div class="form-row" id="detail-company-owner-name-row" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="detail-company-owner-name">Company Owner Name *</label>
+                                        <div class="business-search">
+                                            <input type="text" id="detail-company-owner-name" required placeholder="Enter company owner name">
+                                        </div>
+                                        <small>Required for Intermediary WW reporting businesses</small>
+                                    </div>
+                                </div>
 
                                 <!-- Conditional Business Information Section for Intermediary WW -->
-                                <div id="detail-intermediary-business-info" style="display: none; margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border-left: 3px solid #86b3fe;">
-                                    <h4 style="margin: 0 0 16px 0; color: #86b3fe;">Business Info</h4>
+                                <div id="detail-intermediary-business-info" style="display: none; margin-top: 24px; padding: 20px; background: rgba(255, 255, 255, 0.02); border-radius: 8px;">
+                                    <h4 style="margin: 0 0 16px 0;">Business Info</h4>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="detail-intermediary-business-name">Business Name</label>
                                             <input type="text" id="detail-intermediary-business-name" class="readonly-field" readonly>
                                         </div>
                                         <div class="form-group">
-                                            <label for="detail-intermediary-registration">Registration Number</label>
+                                            <label for="detail-intermediary-registration">Business Registration Number ((BRN))</label>
                                             <input type="text" id="detail-intermediary-registration" class="readonly-field" readonly>
                                         </div>
                                     </div>
                                     <div class="form-row" style="margin-top: 20px;">
                                         <div class="form-group">
-                                            <label for="detail-intermediary-owner">Owner Name</label>
+                                            <label for="detail-intermediary-owner">Business Owner Name</label>
                                             <input type="text" id="detail-intermediary-owner" class="readonly-field" readonly>
                                         </div>
                                         <div class="form-group">
@@ -822,15 +875,25 @@
                             </div>
 
                             <div class="form-section">
-                                <h3>CEO & Partner Center Integration</h3>
+                                <h3>Company Admin</h3>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="detail-company-ceo-email">CEO Email</label>
-                                        <input type="email" id="detail-company-ceo-email" class="readonly-field" readonly>
-                                        <div class="verification-status verified" id="detail-ceo-verification">
-                                            <i class="fas fa-check-circle"></i> CEO email verified in Partner Center
+                                        <label for="detail-company-admin-name">Admin Name *</label>
+                                        <input type="text" id="detail-company-admin-name" required placeholder="Enter admin's full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-company-admin-phone">Admin Phone Number *</label>
+                                        <input type="tel" id="detail-company-admin-phone" required placeholder="Enter admin's phone number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-company-admin-id">Admin ID</label>
+                                        <input type="text" id="detail-company-admin-id" class="readonly-field" readonly>
+                                        <div class="verification-status verified" id="detail-admin-verification">
+                                            <i class="fas fa-check-circle"></i> Admin ID verified in Partner Centre
                                         </div>
-                                        <small>CEO email cannot be changed after company creation</small>
+                                        <small>Admin ID cannot be changed after company creation</small>
                                     </div>
                                 </div>
                             </div>
@@ -843,18 +906,8 @@
                                         <input type="text" id="detail-company-id" class="readonly-field" readonly>
                                     </div>
                                     <div class="form-group">
-                                        <label for="detail-company-status">Status</label>
-                                        <input type="text" id="detail-company-status" class="readonly-field" readonly>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
                                         <label for="detail-company-contract">Contract ID</label>
                                         <input type="text" id="detail-company-contract" class="readonly-field" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="detail-company-poc-email">POC Email</label>
-                                        <input type="email" id="detail-company-poc-email" class="readonly-field" readonly>
                                     </div>
                                 </div>
                                 <div class="form-row">
