@@ -432,22 +432,29 @@
                                         <textarea id="head-office-location" rows="2" required placeholder="Enter head office address"></textarea>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="form-section">
-                                <h3>Business Registration & Verification</h3>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="business-brn">Business Registration Number (BRN) *</label>
-                                        <div class="verification-input">
-                                            <input type="text" id="business-brn" required onblur="verifyBRN(this.value)">
-                                            <button type="button" class="verify-btn" onclick="verifyBRN(document.getElementById('business-brn').value)">
-                                                <i class="fas fa-check"></i> Verify
-                                            </button>
-                                        </div>
-                                        <div class="verification-status pending" id="brn-verification">
-                                            <i class="fas fa-clock"></i> Press Enter or click Verify to validate with Government website
-                                        </div>
+                                        <label for="business-type">Business Type *</label>
+                                        <input type="text" placeholder="Enter Business type" id="business-type" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="insurance-type">Insurance Type</label>
+                                        <select id="insurance-type">
+                                            <option value="">Select Insurance Type</option>
+                                            <option value="single">Single Partner</option>
+                                            <option value="intermediary-self">Intermediary - Self Reporting</option>
+                                            <option value="intermediary-ww">Intermediary - WW Reporting</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="taxation-type">Taxation Type *</label>
+                                        <select id="taxation-type" name="taxation-type" required>
+                                            <option value="">Select taxation type</option>
+                                            <option value="general-taxpayer">General Tax Payer</option>
+                                            <option value="corporate-business">Corporate Business Entity</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="tax-document">Tax Document *</label>
@@ -468,6 +475,24 @@
                                                 </button>
                                             </div>
                                             <small class="link-description">Sharable link for tax document</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Registration & Verification</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="business-brn">Business Registration Number (BRN) *</label>
+                                        <div class="verification-input">
+                                            <input type="text" id="business-brn" required onblur="verifyBRN(this.value)">
+                                            <button type="button" class="verify-btn" onclick="verifyBRN(document.getElementById('business-brn').value)">
+                                                <i class="fas fa-check"></i> Verify
+                                            </button>
+                                        </div>
+                                        <div class="verification-status pending" id="brn-verification">
+                                            <i class="fas fa-clock"></i> Press Enter or click Verify to validate with Government website
                                         </div>
                                     </div>
                                 </div>
@@ -524,27 +549,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-section">
-                                <h3>Business Type & Insurance</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="business-type">Business Type *</label>
-                                        <input type="text" placeholder="Enter Business type" id="business-type" required>
-                                    
-                                            
-                        
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="insurance-type">Insurance Type</label>
-                                        <select id="insurance-type">
-                                            <option value="">Select Insurance Type</option>
-                                            <option value="single">Single Partner</option>
-                                            <option value="intermediary-self">Intermediary - Self Reporting</option>
-                                            <option value="intermediary-ww">Intermediary - WW Reporting</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
 
 
                             <div class="form-actions">
@@ -603,22 +607,28 @@
                                         <textarea id="detail-head-office-location" rows="2" placeholder="Enter head office address"></textarea>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="form-section">
-                                <h3>Business Registration & Verification</h3>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="detail-business-brn">Business Registration Number (BRN) *</label>
-                                        <div class="verification-input">
-                                            <input type="text" id="detail-business-brn" required onchange="handleBRNChange(this.value)">
-                                            <button type="button" class="verify-btn" id="detail-verify-brn-btn" onclick="verifyDetailBRN(document.getElementById('detail-business-brn').value)" style="display: none;">
-                                                <i class="fas fa-check"></i> Re-verify
-                                            </button>
-                                        </div>
-                                        <div class="verification-status verified" id="detail-brn-verification">
-                                            <i class="fas fa-check-circle"></i> BRN Verified
-                                        </div>
+                                        <label for="detail-business-type">Business Type *</label>
+                                        <input type="text" id="detail-business-type" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="detail-insurance-type">Insurance Type *</label>
+                                        <select id="detail-insurance-type" required>
+                                            <option value="">Select Insurance Type</option>
+                                            <option value="single">Single Partner</option>
+                                            <option value="intermediary-self">Intermediary - Self Reporting</option>
+                                            <option value="intermediary-ww">Intermediary - WW Reporting</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-taxation-type">Taxation Type</label>
+                                        <select id="detail-taxation-type" name="detail-taxation-type">
+                                            <option value="general-taxpayer">General Tax Payer</option>
+                                            <option value="corporate-business">Corporate Business Entity</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="detail-tax-document">Tax Document</label>
@@ -650,6 +660,24 @@
                                                     Upload New Document
                                                 </label>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Business Registration & Verification</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="detail-business-brn">Business Registration Number (BRN) *</label>
+                                        <div class="verification-input">
+                                            <input type="text" id="detail-business-brn" required onchange="handleBRNChange(this.value)">
+                                            <button type="button" class="verify-btn" id="detail-verify-brn-btn" onclick="verifyDetailBRN(document.getElementById('detail-business-brn').value)" style="display: none;">
+                                                <i class="fas fa-check"></i> Re-verify
+                                            </button>
+                                        </div>
+                                        <div class="verification-status verified" id="detail-brn-verification">
+                                            <i class="fas fa-check-circle"></i> BRN Verified
                                         </div>
                                     </div>
                                 </div>
@@ -705,24 +733,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-section">
-                                <h3>Business Type & Insurance</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="detail-business-type">Business Type *</label>
-                                        <input type="text" id="detail-business-type" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="detail-insurance-type">Insurance Type *</label>
-                                        <select id="detail-insurance-type" required>
-                                            <option value="">Select Insurance Type</option>
-                                            <option value="single">Single Partner</option>
-                                            <option value="intermediary-self">Intermediary - Self Reporting</option>
-                                            <option value="intermediary-ww">Intermediary - WW Reporting</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="form-section">
                                 <h3>System Information</h3>
