@@ -493,10 +493,10 @@ function renderBusinessesTable() {
             <td>${business.name}</td>
             <td>${business.brn}</td>
             <td>
-                <span class="status-badge ${business.insuranceType?.includes('intermediary') ? 'status-operating' : 'status-preparing'}">
-                    ${business.insuranceType === 'intermediary-self' ? 'Intermediary - Self Reporting' : 
-                      business.insuranceType === 'intermediary-ww' ? 'Intermediary - WW Reporting' : 
-                      business.insuranceType === 'single' ? 'Single Partner' : 
+                <span class="status-badge ${business.insuranceType === 'intermediary-self' ? 'status-intermediary-self' : business.insuranceType?.includes('intermediary') ? 'status-operating' : 'status-preparing'}">
+                    ${business.insuranceType === 'intermediary-self' ? 'Intermediary - Self Reporting' :
+                      business.insuranceType === 'intermediary-ww' ? 'Intermediary - WW Reporting' :
+                      business.insuranceType === 'single' ? 'Single Partner' :
                       business.type || 'Unknown'}
                 </span>
             </td>

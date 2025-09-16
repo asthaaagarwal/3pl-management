@@ -590,6 +590,11 @@ body {
     color: #C0B8FF;
 }
 
+.status-intermediary-self {
+    background-color: #26178C;
+    color: #C0B8FF;
+}
+
 /* Action Buttons */
 .action-btn {
     background: none;
